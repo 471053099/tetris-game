@@ -22,8 +22,7 @@ jobs:
     
     - name: Build EXE
       run: |
-        cp tetris.py tetris_singlefile.py
-        pyinstaller --onefile --windowed --name Tetris tetris_singlefile.py
+        pyinstaller --onefile --windowed --name Tetris --hidden-import pygame --hidden-import=pygame.test tetris.py
         dir dist
     
     - name: Upload artifact
