@@ -1,0 +1,46 @@
+name: Build Tetris EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+    
+    - name: Build EXE
+      run: |
+        cp tetris.py tetris_singlefile.py
+        pyinstaller --onefile --windowed --name Tetris tetris_singlefile.py
+        dir dist
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Tetris-EXE
+        path: dist/Tetris.exe
+
+    - name: Download artifact
+      id: download
+      uses: actions/download-artifact@v4
+      with:
+        name: Tetris-EXE
+        path: dist/
+    
+    - name: Upload to GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/Tetris.exe
